@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if module else 'New' }} Module — StudyPal{% endblock %}
+{% block content %}
+<div class="page-narrow">
+    <h1>{{ 'Edit Module' if module else 'New Module' }}</h1>
+    <form method="POST" class="form">
+        <label>Module name
+            <input type="text" name="name" value="{{ module.name if module else '' }}" placeholder="e.g. Software Development" required>
+        </label>
+        <label>Description (optional)
+            <textarea name="description" rows="3">{{ module.description if module else '' }}</textarea>
+        </label>
+        <button type="submit" class="btn">{{ 'Save Changes' if module else 'Create Module' }}</button>
+        <a href="{{ url_for('modules.list_modules') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

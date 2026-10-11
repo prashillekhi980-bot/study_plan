@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Notes — {{ task.title }} — StudyPal{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="page-header">
+        <h1>Notes for "{{ task.title }}"</h1>
+    </div>
+
+    <form method="POST" action="{{ url_for('notes.new_note', task_id=task.id) }}" class="form">
+        <label>Add a note
+            <textarea name="content" rows="4" placeholder="Paste your class notes or a summary of what you covered..." required></textarea>
+        </label>
+        <button type="submit" class="btn">Save Note</button>
+    </form>
+
+    <p class="muted note-privacy-line">
+        {% if api_configured %}
+        A summary is created with a built-in offline summarizer by default — nothing leaves this server.
+        You can optionally opt in per-note to use the OpenAI API instead for a better summary.
+        {% else %}
+        Summaries use a built-in offline summarizer — nothing is sent to any external service.
+        (The optional OpenAI-powered summary isn't configured on this server.)
+        {% endif %}
+    </p>
+
+    {% if notes %}
+    {% for note in notes %}
+    <div class="card note-card">
+        <p>{{ note.content }}</p>
+        <p class="muted" style="font-size:12px;">{{ note.created_at.strftime('%d %b %Y, %H:%M') }}</p>
+
+        {% if note.summary %}
+        <div class="note-summary">
+            <b>Summary:</b> {{ note.summary }}
+        </div>
+        {% else %}
+        <form method="POST" action="{{ url_for('notes.summarize_note', note_id=note.id) }}" class="summarize-form">
+            {% if api_configured %}
+            <label class="checkbox-label">
+                <input type="checkbox" name="consent_to_external_api">
+                Use OpenAI API for a better summary (sends this note's content externally)
+            </label>
+            {% endif %}
+            <button type="submit" class="link-btn">Summarize</button>
+        </form>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('notes.delete_note', note_id=note.id) }}"
+              data-confirm="Delete this note?" style="margin-top:6px;">
+            <button type="submit" class="link-btn danger">Delete</button>
+        </form>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="muted">No notes yet for this task.</p>
+    {% endif %}
+
+    <p style="margin-top:20px;"><a href="{{ url_for('tasks.list_tasks', module_id=task.module_id) }}">&larr; Back to tasks</a></p>
+</div>
+{% endblock %}

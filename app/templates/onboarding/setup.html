@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Set up StudyPal{% endblock %}
+{% block content %}
+<div class="onboarding-overlay">
+    <div class="onboarding-box">
+        <h1>Welcome to StudyPal, {{ user.name }}</h1>
+        <p class="muted">A quick one-time setup before your dashboard — you can change any of this later in Settings.</p>
+
+        <form method="POST" action="{{ url_for('onboarding.setup_wizard') }}" class="form">
+            <label>How many hours can you normally study per day?
+                <input type="number" name="daily_study_hours" min="0.5" step="0.5" value="{{ user.daily_study_hours }}" required>
+            </label>
+
+            <fieldset class="setup-modules">
+                <legend>Add the modules you're currently studying</legend>
+                <div id="module-rows">
+                    <input type="text" name="module_name" placeholder="e.g. Artificial Intelligence">
+                    <input type="text" name="module_name" placeholder="e.g. Database Systems">
+                    <input type="text" name="module_name" placeholder="e.g. Web Development">
+                    <input type="text" name="module_name" placeholder="e.g. Research Methods">
+                </div>
+                <button type="button" id="add-module-row" class="link-btn">+ Add another module</button>
+                <p class="muted">Leave any of these blank — you can always add more modules later.</p>
+            </fieldset>
+
+            <div class="setup-actions">
+                <button type="submit" class="btn">Continue to Dashboard</button>
+            </div>
+        </form>
+
+        <form method="POST" action="{{ url_for('onboarding.skip_setup') }}" style="margin-top: 12px;">
+            <button type="submit" class="link-btn">Skip for now</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById("add-module-row").addEventListener("click", function () {
+    var rows = document.getElementById("module-rows");
+    var input = document.createElement("input");
+    input.type = "text";
+    input.name = "module_name";
+    input.placeholder = "Another module";
+    rows.appendChild(input);
+    input.focus();
+});
+</script>
+{% endblock %}

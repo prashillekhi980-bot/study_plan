@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${DB_NAME:-study_planner}
+      MYSQL_USER: ${DB_USER:-planner_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-PlannerPass123!}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docs/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-me}
+      FLASK_ENV: development
+      DB_USER: ${DB_USER:-planner_user}
+      DB_PASSWORD: ${DB_PASSWORD:-PlannerPass123!}
+      DB_HOST: db
+      DB_NAME: ${DB_NAME:-study_planner}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    ports:
+      - "5001:5000"
+    volumes:
+      - .:/app
+
+volumes:
+  db_data:

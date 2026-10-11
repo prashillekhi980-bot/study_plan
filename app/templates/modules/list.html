@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Modules — StudyPal{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="page-header">
+        <h1>Your Modules</h1>
+        <a class="btn" href="{{ url_for('modules.new_module') }}">+ Add Module</a>
+    </div>
+
+    {% if modules %}
+    <div class="card-grid">
+        {% for m in modules %}
+        <div class="card">
+            <h3>{{ m.name }}</h3>
+            {% if m.description %}<p class="muted">{{ m.description }}</p>{% endif %}
+            <p class="muted">{{ m.completed_task_count }} / {{ m.tasks|length }} task{{ 's' if m.tasks|length != 1 else '' }} completed</p>
+            <div class="progress-bar"><div class="progress-fill" style="width: {{ m.progress_percent }}%"></div></div>
+            <span class="muted" style="font-size:12px;">{{ m.progress_percent }}%</span>
+            <div class="card-actions">
+                <a href="{{ url_for('tasks.list_tasks', module_id=m.id) }}">View Tasks</a>
+                <a href="{{ url_for('modules.edit_module', module_id=m.id) }}">Edit</a>
+                <form method="POST" action="{{ url_for('modules.delete_module', module_id=m.id) }}"
+                      data-confirm="Delete this module and all its tasks?" style="display:inline;">
+                    <button type="submit" class="link-btn danger">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="muted">No modules yet — add your first one (e.g. "Software Development", "AI", "Web Technologies").</p>
+    {% endif %}
+</div>
+{% endblock %}

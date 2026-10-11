@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}{{ task.title }} — StudyPal{% endblock %}
+{% block content %}
+<div class="page page-narrow">
+    <div class="page-header">
+        <h1>{{ task.title }}</h1>
+    </div>
+
+    <div class="card">
+        <p class="task-meta">
+            <span class="badge badge-{{ task.priority }}">{{ task.priority }} priority</span>
+            <span class="diff-dots" title="Difficulty {{ task.difficulty }}/5">{{ '●' * task.difficulty }}{{ '○' * (5 - task.difficulty) }}</span>
+            {% if task.is_struggling %}<span class="struggling-flag" title="Flagged as struggling">Struggling</span>{% endif %}
+            {% if task.due_date < today and task.status != 'completed' %}<span class="badge badge-high">overdue</span>{% endif %}
+        </p>
+
+        {% if task.description %}<p>{{ task.description }}</p>{% endif %}
+
+        <table class="data-table">
+            <tbody>
+                <tr><td class="muted">Module</td><td>{{ task.module.name }}</td></tr>
+                <tr><td class="muted">Due date</td><td>{{ task.due_date.strftime('%d %b %Y') }}</td></tr>
+                <tr><td class="muted">Status</td><td>{{ task.status.replace('_', ' ') }}</td></tr>
+                <tr><td class="muted">Estimated hours</td><td>{{ task.estimated_hours }}h</td></tr>
+                <tr><td class="muted">Completed hours</td><td>{{ task.hours_completed }}h</td></tr>
+                <tr><td class="muted">Remaining hours</td><td>{{ task.remaining_hours }}h</td></tr>
+                <tr><td class="muted">Progress</td>
+                    <td>
+                        <div class="progress-bar"><div class="progress-fill" style="width: {{ task.progress_percent }}%"></div></div>
+                        <span class="progress-label">{{ task.progress_percent }}%</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="actions-row" style="margin-top:16px;">
+            <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}" class="btn btn-secondary">Edit</a>
+            <a href="{{ url_for('notes.list_notes', task_id=task.id) }}" class="btn btn-secondary">Notes</a>
+            {% if task.status != 'completed' %}
+            <form method="POST" action="{{ url_for('tasks.mark_complete', task_id=task.id) }}">
+                <button type="submit" class="btn">Mark Complete</button>
+            </form>
+            {% endif %}
+        </div>
+
+        {% if task.status != 'completed' %}
+        <div class="session-control" style="margin-top:16px;">
+            {% if active_study_session and active_study_session.task_id == task.id %}
+            <div class="session-active-box">
+                <span class="session-live-badge">⏱ Session running —
+                    <span class="session-timer" data-started-at="{{ active_study_session.started_at.isoformat() }}Z">00:00:00</span>
+                </span>
+                <form method="POST" action="{{ url_for('tasks.stop_session', session_id=active_study_session.id) }}">
+                    <button type="submit" class="btn btn-danger">Stop Session</button>
+                </form>
+            </div>
+            {% elif active_study_session %}
+            <p class="muted">You have a session running on "{{ active_study_session.task.title }}" — stop it before starting this one.</p>
+            {% else %}
+            <form method="POST" action="{{ url_for('tasks.start_session', task_id=task.id) }}">
+                <button type="submit" class="btn">Start Session</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <h2>Study sessions recorded</h2>
+    {% if sessions %}
+    <table class="data-table">
+        <thead><tr><th>Date</th><th>Hours</th><th>Type</th></tr></thead>
+        <tbody>
+            {% for s in sessions %}
+            <tr>
+                <td>{{ s.scheduled_date.strftime('%d %b %Y') }}</td>
+                <td>
+                    {% if s.is_active %}
+                    <span class="session-timer" data-started-at="{{ s.started_at.isoformat() }}Z">00:00:00</span>
+                    {% else %}
+                    {{ s.allocated_hours }}h
+                    {% endif %}
+                </td>
+                <td>{{ 'Studying now' if s.is_active else ('Studied' if s.is_completed else 'Planned') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No study sessions recorded yet — start a session above or generate a timetable.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('tasks.list_tasks', module_id=task.module_id) }}">&larr; Back to {{ task.module.name }} tasks</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Register — StudyPal{% endblock %}
+{% block content %}
+<div class="auth-box">
+    <h1>Create your account</h1>
+    <form method="POST">
+        <input type="text" name="name" placeholder="Full name" required>
+        <input type="email" name="email" placeholder="Email address" required>
+        {% include "auth/_password_field.html" %}
+        {% with field_name="confirm_password", field_placeholder="Confirm password" %}
+            {% include "auth/_password_field.html" %}
+        {% endwith %}
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

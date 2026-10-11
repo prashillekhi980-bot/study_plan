@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Progress — StudyPal{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="page-header">
+        <h1>Your Progress</h1>
+    </div>
+
+    <div class="card-grid" style="margin-bottom:24px;">
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></span>
+            </div>
+            <div class="stat-value">{{ overall_progress }}%</div>
+            <div class="stat-label">Overall completion</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon stat-icon-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="m7.5 12 2.5 2.5L16.5 9"/></svg></span>
+            </div>
+            <div class="stat-value">{{ completed_count }} / {{ task_count }}</div>
+            <div class="stat-label">Tasks completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+            </div>
+            <div class="stat-value">{{ total_completed_hours }}h</div>
+            <div class="stat-label">Hours completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 12v5c0 1.1 2.7 2 6 2s6-.9 6-2v-5"/></svg></span>
+            </div>
+            <div class="stat-value">{{ total_remaining_hours }}h</div>
+            <div class="stat-label">Hours remaining</div>
+        </div>
+    </div>
+
+    <h2>Progress by module</h2>
+    {% if modules %}
+    <table class="data-table">
+        <thead><tr><th>Module</th><th>Tasks</th><th>Progress</th></tr></thead>
+        <tbody>
+            {% for m in modules %}
+            <tr>
+                <td>{{ m.name }}</td>
+                <td>{{ m.completed_task_count }} / {{ m.tasks|length }}</td>
+                <td>
+                    <div class="progress-bar"><div class="progress-fill" style="width: {{ m.progress_percent }}%"></div></div>
+                    <span class="progress-label">{{ m.progress_percent }}%</span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No modules yet.</p>
+    {% endif %}
+
+    <h2>Study hours this week &middot; <span class="muted" style="font-size:14px;">{{ week_total_hours }}h total</span></h2>
+    <div class="week-hours-grid">
+        {% set max_hours = (daily_hours | map(attribute='hours') | max) or 1 %}
+        {% for d in daily_hours %}
+        <div class="week-hours-col">
+            <div class="week-hours-bar-track">
+                <div class="week-hours-bar" style="height: {{ (d.hours / max_hours * 100) if max_hours else 0 }}%"></div>
+            </div>
+            <span class="week-hours-value">{{ d.hours }}h</span>
+            <span class="week-hours-day">{{ d.date.strftime('%a') }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    <p class="muted" style="margin-top:8px;">Hours actually studied — from Start/Stop Session timers and marking tasks complete — separate from planned timetable blocks.</p>
+</div>
+{% endblock %}

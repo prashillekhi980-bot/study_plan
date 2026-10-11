@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Timetable — StudyPal{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="page-header">
+        <h1>Your Study Timetable</h1>
+        <form method="POST" action="{{ url_for('timetable.generate') }}">
+            <button type="submit" class="btn">Regenerate Timetable</button>
+        </form>
+    </div>
+
+    <form method="POST" action="{{ url_for('timetable.update_daily_hours') }}" class="daily-hours-form">
+        <label>Daily study hours available:
+            <input type="number" name="daily_study_hours" min="0.5" step="0.5" value="{{ user.daily_study_hours }}">
+        </label>
+        <button type="submit" class="link-btn">Update</button>
+    </form>
+
+    {% if days %}
+    <div class="timetable-grid">
+        {% for day in days %}
+        <div class="day-column {{ 'day-column-today' if day.is_today else '' }} {{ 'day-column-empty' if not day.sessions else '' }}">
+            <div class="day-header">
+                <div>
+                    <span class="day-name">{{ day.date.strftime('%a') }}</span>
+                    <span class="day-date">{{ day.date.strftime('%d %b') }}</span>
+                </div>
+                {% if day.sessions %}<span class="day-total">{{ day.total_hours }}h</span>{% endif %}
+            </div>
+            {% if day.sessions %}
+                {% for s in day.sessions %}
+                <div class="session-block {{ 'session-overdue' if s.task.due_date < day.date else '' }}">
+                    <b>{{ s.task.title }}</b>
+                    <span class="muted">{{ s.task.module.name }}</span>
+                    <span>{{ s.allocated_hours }}h</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="day-empty-label">Free day</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="muted">No timetable generated yet. Click "Regenerate Timetable" to build one from your current tasks.</p>
+    {% endif %}
+
+    <p class="back-link"><a href="{{ url_for('recommendations.dashboard') }}">&larr; Back to dashboard</a></p>
+</div>
+{% endblock %}

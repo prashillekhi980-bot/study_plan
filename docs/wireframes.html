@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #fff; margin: 0; }
+  .frame {
+    width: 1200px;
+    border: 2px solid #333;
+    margin: 0 auto 60px auto;
+    page-break-after: always;
+  }
+  .frame-title {
+    background: #333; color: #fff; padding: 8px 16px; font-size: 14px; font-weight: bold;
+  }
+  .frame-body { padding: 20px; }
+  .wire-box {
+    border: 1.5px dashed #888;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 13px;
+    text-align: center;
+  }
+  .row { display: flex; gap: 16px; }
+  .col { flex: 1; }
+  .navbar {
+    height: 50px; background: #ddd; border: 1.5px solid #888;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; margin-bottom: 16px; font-size: 13px; font-weight: bold; color: #444;
+  }
+  .navbar .links { display: flex; gap: 20px; font-weight: normal; }
+  .sidebar {
+    width: 180px; height: 480px;
+  }
+  .sidebar .item {
+    height: 40px; margin-bottom: 8px;
+  }
+  .card { height: 90px; margin-bottom: 12px; }
+  .btn {
+    background: #e0e0e0; border: 1.5px solid #666; border-radius: 4px;
+    padding: 8px 14px; font-size: 12px; font-weight: bold; color: #333; display: inline-block;
+  }
+  .input {
+    border: 1.5px solid #999; height: 36px; background: #fff; margin-bottom: 12px;
+    display: flex; align-items: center; padding-left: 10px; font-size: 12px; color: #777;
+  }
+  .table-row {
+    display: flex; border-bottom: 1px solid #ccc; padding: 8px 4px; font-size: 12px; color: #444;
+  }
+  .table-row.header { font-weight: bold; background: #eee; }
+  .table-row div { flex: 1; }
+  h2 { font-size: 15px; margin: 0 0 10px 0; color: #222; border-bottom: 2px solid #333; padding-bottom: 4px;}
+</style>
+</head>
+<body>
+
+<!-- FRAME 1: LOGIN / REGISTER -->
+<div class="frame" id="f1">
+  <div class="frame-title">Wireframe 1 — Login / Register</div>
+  <div class="frame-body" style="display:flex; justify-content:center; padding:60px 0;">
+    <div style="width:380px; border:1.5px solid #666; padding:30px;">
+      <div class="wire-box" style="height:40px; margin-bottom:20px; font-weight:bold; font-size:18px;">StudyPal Logo</div>
+      <div class="input">Email address</div>
+      <div class="input">Password</div>
+      <div class="btn" style="width:100%; text-align:center; margin-bottom:14px;">LOG IN</div>
+      <div style="text-align:center; font-size:12px; color:#777;">Don't have an account? <u>Register</u></div>
+    </div>
+  </div>
+</div>
+
+<!-- FRAME 2: MAIN DASHBOARD -->
+<div class="frame" id="f2">
+  <div class="frame-title">Wireframe 2 — Main Dashboard</div>
+  <div class="frame-body">
+    <div class="navbar">
+      StudyPal
+      <div class="links"><span>Dashboard</span><span>Modules</span><span>Timetable</span><span>Logout</span></div>
+    </div>
+    <div class="row">
+      <div class="sidebar wire-box" style="flex-direction:column; align-items:stretch;">
+        <div style="padding:10px; font-weight:bold; border-bottom:1px solid #999;">Modules</div>
+        <div class="item wire-box">Software Dev</div>
+        <div class="item wire-box">AI</div>
+        <div class="item wire-box">Web Tech</div>
+        <div class="item wire-box" style="border-style:solid;">+ Add Module</div>
+      </div>
+      <div class="col">
+        <h2>What to study next (AI Recommendation)</h2>
+        <div class="card wire-box" style="border-color:#c94f4f; justify-content:flex-start; padding-left:16px; text-align:left; flex-direction:column; align-items:flex-start;">
+          <b>#1 Recommended: "Database Coursework" — Web Tech</b>
+          <span>Score: 8.7 | Due in 2 days | Difficulty: High | Progress: 20%</span>
+        </div>
+        <h2 style="margin-top:20px;">Progress Overview</h2>
+        <div class="row">
+          <div class="card wire-box col">Overall Progress<br>Bar Chart</div>
+          <div class="card wire-box col">Tasks Completed<br>12 / 20</div>
+          <div class="card wire-box col">Hours Studied<br>This Week</div>
+        </div>
+        <h2 style="margin-top:20px;">Upcoming Tasks</h2>
+        <div class="table-row header"><div>Task</div><div>Module</div><div>Due</div><div>Priority</div><div>Status</div></div>
+        <div class="table-row"><div>Database Coursework</div><div>Web Tech</div><div>2 days</div><div>High</div><div>In Progress</div></div>
+        <div class="table-row"><div>Neural Nets Essay</div><div>AI</div><div>5 days</div><div>Medium</div><div>Not Started</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FRAME 3: MODULE / TASK MANAGEMENT -->
+<div class="frame" id="f3">
+  <div class="frame-title">Wireframe 3 — Module &amp; Task Management</div>
+  <div class="frame-body">
+    <div class="navbar">
+      StudyPal
+      <div class="links"><span>Dashboard</span><span>Modules</span><span>Timetable</span><span>Logout</span></div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h2>Module: Web Technologies</h2>
+        <div class="btn" style="margin-bottom:14px;">+ Add New Task</div>
+        <div class="table-row header"><div>Title</div><div>Due Date</div><div>Priority</div><div>Difficulty</div><div>Est. Hours</div><div>Struggling?</div><div>Status</div><div>Actions</div></div>
+        <div class="table-row"><div>Database Coursework</div><div>25 Sep</div><div>High</div><div>4/5</div><div>8h</div><div>Yes</div><div>In Progress</div><div>Edit | Delete</div></div>
+        <div class="table-row"><div>CSS Layout Task</div><div>30 Sep</div><div>Low</div><div>2/5</div><div>3h</div><div>No</div><div>Not Started</div><div>Edit | Delete</div></div>
+      </div>
+      <div style="width:320px;">
+        <h2>Add / Edit Task Form</h2>
+        <div class="input">Task title</div>
+        <div class="input">Due date (date picker)</div>
+        <div class="input">Priority (Low/Med/High)</div>
+        <div class="input">Difficulty (1–5 slider)</div>
+        <div class="input">Estimated hours</div>
+        <div class="input">☐ Struggling with this topic</div>
+        <div class="btn" style="width:100%; text-align:center;">SAVE TASK</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FRAME 4: TIMETABLE VIEW -->
+<div class="frame" id="f4">
+  <div class="frame-title">Wireframe 4 — Auto-Generated Timetable</div>
+  <div class="frame-body">
+    <div class="navbar">
+      StudyPal
+      <div class="links"><span>Dashboard</span><span>Modules</span><span>Timetable</span><span>Logout</span></div>
+    </div>
+    <h2>This Week's Study Timetable</h2>
+    <div class="row" style="margin-bottom:10px;">
+      <div class="wire-box col" style="height:36px;">Daily study hours: 3h &nbsp; (editable)</div>
+      <div class="btn">Regenerate Timetable</div>
+    </div>
+    <div class="row">
+      <div class="col wire-box" style="flex-direction:column; height:280px; align-items:stretch; padding:8px;">
+        <b style="margin-bottom:6px;">Mon</b>
+        <div class="wire-box" style="height:60px; margin-bottom:6px; background:#fdecec;">Database Coursework<br>2h</div>
+        <div class="wire-box" style="height:60px; background:#fff8ea;">CSS Layout Task<br>1h</div>
+      </div>
+      <div class="col wire-box" style="flex-direction:column; height:280px; align-items:stretch; padding:8px;">
+        <b style="margin-bottom:6px;">Tue</b>
+        <div class="wire-box" style="height:60px; background:#fdecec;">Database Coursework<br>3h</div>
+      </div>
+      <div class="col wire-box" style="flex-direction:column; height:280px; align-items:stretch; padding:8px;">
+        <b style="margin-bottom:6px;">Wed</b>
+        <div class="wire-box" style="height:60px; background:#eefaf0;">Neural Nets Essay<br>2h</div>
+      </div>
+      <div class="col wire-box" style="flex-direction:column; height:280px; align-items:stretch; padding:8px;">
+        <b style="margin-bottom:6px;">Thu</b>
+        <div class="wire-box" style="height:60px; background:#eefaf0;">Neural Nets Essay<br>2h</div>
+      </div>
+      <div class="col wire-box" style="flex-direction:column; height:280px; align-items:stretch; padding:8px;">
+        <b style="margin-bottom:6px;">Fri</b>
+        <div class="wire-box" style="height:60px; background:#f5f5f5; color:#aaa;">Free / buffer</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

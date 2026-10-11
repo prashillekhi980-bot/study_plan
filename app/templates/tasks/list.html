@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ module.name }} Tasks — StudyPal{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="page-header">
+        <h1>{{ module.name }}</h1>
+        <a class="btn" href="{{ url_for('tasks.new_task', module_id=module.id) }}">+ Add Task</a>
+    </div>
+
+    {% if tasks %}
+    <table class="data-table task-table">
+        <thead>
+            <tr>
+                <th>Task</th><th>Due</th><th>Progress</th><th>Status</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in tasks %}
+            <tr class="{{ 'overdue' if t.due_date < today and t.status != 'completed' else '' }}">
+                <td>
+                    <div class="task-title">{{ t.title }}</div>
+                    <div class="task-meta">
+                        <span class="badge badge-{{ t.priority }}">{{ t.priority }}</span>
+                        <span class="diff-dots" title="Difficulty {{ t.difficulty }}/5">{{ '●' * t.difficulty }}{{ '○' * (5 - t.difficulty) }}</span>
+                        {% if t.is_struggling %}<span class="struggling-flag" title="Flagged as struggling">Struggling</span>{% endif %}
+                    </div>
+                </td>
+                <td>{{ t.due_date.strftime('%d %b %Y') }}</td>
+                <td>
+                    <div class="progress-bar"><div class="progress-fill" style="width: {{ t.progress_percent }}%"></div></div>
+                    <span class="progress-label">{{ t.progress_percent }}% &middot; {{ t.hours_completed }}/{{ t.estimated_hours }}h</span>
+                </td>
+                <td>{{ t.status.replace('_', ' ') }}</td>
+                <td class="actions">
+                    <div class="actions-row">
+                        <a href="{{ url_for('tasks.edit_task', task_id=t.id) }}">Edit</a>
+                        <a href="{{ url_for('notes.list_notes', task_id=t.id) }}">Notes</a>
+                        <form method="POST" action="{{ url_for('tasks.delete_task', task_id=t.id) }}"
+                              data-confirm="Delete this task?">
+                            <button type="submit" class="link-btn danger">Delete</button>
+                        </form>
+                    </div>
+                    {% if t.status != 'completed' %}
+                    <div class="actions-row">
+                        {% include "tasks/_session_row_control.html" %}
+                        <form method="POST" action="{{ url_for('tasks.mark_complete', task_id=t.id) }}">
+                            <button type="submit" class="link-btn">Done</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No tasks yet for this module.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('modules.list_modules') }}">&larr; Back to modules</a></p>
+</div>
+{% endblock %}

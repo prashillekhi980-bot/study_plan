@@ -1,0 +1,78 @@
+digraph ERD {
+    rankdir=LR;
+    node [shape=plaintext, fontname="Helvetica"];
+    edge [fontname="Helvetica", fontsize=10, color="#555555"];
+
+    users [label=<
+        <table border="1" cellborder="0" cellspacing="0" cellpadding="4" bgcolor="#eef4ff">
+        <tr><td bgcolor="#4a76d4"><font color="white"><b>users</b></font></td></tr>
+        <tr><td align="left">PK  id</td></tr>
+        <tr><td align="left">    name</td></tr>
+        <tr><td align="left">    email (unique)</td></tr>
+        <tr><td align="left">    password_hash</td></tr>
+        <tr><td align="left">    daily_study_hours</td></tr>
+        <tr><td align="left">    created_at</td></tr>
+        </table>
+    >];
+
+    modules [label=<
+        <table border="1" cellborder="0" cellspacing="0" cellpadding="4" bgcolor="#eefaf0">
+        <tr><td bgcolor="#3fa65a"><font color="white"><b>modules</b></font></td></tr>
+        <tr><td align="left">PK  id</td></tr>
+        <tr><td align="left">FK  user_id</td></tr>
+        <tr><td align="left">    name</td></tr>
+        <tr><td align="left">    description</td></tr>
+        <tr><td align="left">    created_at</td></tr>
+        </table>
+    >];
+
+    tasks [label=<
+        <table border="1" cellborder="0" cellspacing="0" cellpadding="4" bgcolor="#fff8ea">
+        <tr><td bgcolor="#d99a25"><font color="white"><b>tasks</b></font></td></tr>
+        <tr><td align="left">PK  id</td></tr>
+        <tr><td align="left">FK  module_id</td></tr>
+        <tr><td align="left">    title</td></tr>
+        <tr><td align="left">    description</td></tr>
+        <tr><td align="left">    due_date</td></tr>
+        <tr><td align="left">    priority</td></tr>
+        <tr><td align="left">    difficulty</td></tr>
+        <tr><td align="left">    estimated_hours</td></tr>
+        <tr><td align="left">    hours_completed</td></tr>
+        <tr><td align="left">    is_struggling</td></tr>
+        <tr><td align="left">    status</td></tr>
+        <tr><td align="left">    created_at / updated_at</td></tr>
+        </table>
+    >];
+
+    study_sessions [label=<
+        <table border="1" cellborder="0" cellspacing="0" cellpadding="4" bgcolor="#fdecec">
+        <tr><td bgcolor="#c94f4f"><font color="white"><b>study_sessions</b></font></td></tr>
+        <tr><td align="left">PK  id</td></tr>
+        <tr><td align="left">FK  task_id</td></tr>
+        <tr><td align="left">FK  user_id</td></tr>
+        <tr><td align="left">    scheduled_date</td></tr>
+        <tr><td align="left">    allocated_hours</td></tr>
+        <tr><td align="left">    is_completed</td></tr>
+        <tr><td align="left">    created_at</td></tr>
+        </table>
+    >];
+
+    notes [label=<
+        <table border="1" cellborder="0" cellspacing="0" cellpadding="4" bgcolor="#f2edfa">
+        <tr><td bgcolor="#8a5fc9"><font color="white"><b>notes (optional)</b></font></td></tr>
+        <tr><td align="left">PK  id</td></tr>
+        <tr><td align="left">FK  task_id (nullable)</td></tr>
+        <tr><td align="left">FK  user_id</td></tr>
+        <tr><td align="left">    content</td></tr>
+        <tr><td align="left">    summary</td></tr>
+        <tr><td align="left">    created_at</td></tr>
+        </table>
+    >];
+
+    users -> modules [label="1—N"];
+    modules -> tasks [label="1—N"];
+    tasks -> study_sessions [label="1—N"];
+    users -> study_sessions [label="1—N"];
+    users -> notes [label="1—N"];
+    tasks -> notes [label="0—N", style=dashed];
+}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — StudyPal{% endblock %}
+{% block content %}
+<div class="page">
+    <div class="page-header">
+        <h1>Welcome, {{ user.name }}</h1>
+    </div>
+
+    <div class="card-grid" style="margin-bottom:24px;">
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+            </div>
+            <div class="stat-value">{{ todays_hours_studied }}h / {{ user.daily_study_hours }}h</div>
+            <div class="stat-label">Today's study</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 12v5c0 1.1 2.7 2 6 2s6-.9 6-2v-5"/></svg></span>
+            </div>
+            <div class="stat-value">{{ stats.module_count }}</div>
+            <div class="stat-label">Modules</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon stat-icon-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="m7.5 12 2.5 2.5L16.5 9"/></svg></span>
+            </div>
+            <div class="stat-value">{{ stats.completed_count }} / {{ stats.task_count }}</div>
+            <div class="stat-label">Tasks completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></span>
+            </div>
+            <div class="stat-value">{{ stats.overall_progress }}%</div>
+            <div class="stat-label">Overall study progress</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <span class="stat-icon {{ 'stat-icon-danger' if stats.overdue_count else 'stat-icon-ok' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+                {% if stats.overdue_count %}<span class="stat-trend down">{{ stats.overdue_count }}</span>{% else %}<span class="stat-trend up">0</span>{% endif %}
+            </div>
+            <div class="stat-value {{ 'stat-alert' if stats.overdue_count else 'stat-ok' }}">{{ stats.overdue_count }}</div>
+            <div class="stat-label">Overdue tasks</div>
+        </div>
+    </div>
+
+    <h2>Today's Schedule</h2>
+    {% if todays_sessions %}
+    <ul class="today-schedule-list">
+        {% for s in todays_sessions %}
+        <li class="{{ 'is-done' if s.is_completed else '' }}">
+            <span>{{ s.task.title }}</span>
+            <span class="muted">{{ s.task.module.name }}</span>
+            {% if s.is_active %}
+            <span class="session-timer" data-started-at="{{ s.started_at.isoformat() }}Z">00:00:00</span>
+            {% else %}
+            <span>{{ s.allocated_hours }}h</span>
+            {% endif %}
+            <span class="badge {{ 'badge-low' if s.is_completed else ('badge-high' if s.is_active else 'badge-medium') }}">
+                {{ 'studied' if s.is_completed else ('studying now' if s.is_active else 'planned') }}
+            </span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Nothing scheduled for today — <a href="{{ url_for('timetable.view_timetable') }}">generate a timetable</a> to get study blocks.</p>
+    {% endif %}
+
+    <h2>What to study next</h2>
+    {% if top_recommendations %}
+    <div class="card-grid" style="margin-bottom:24px;">
+        {% for r in top_recommendations %}
+        <div class="card {{ 'recommend-top' if loop.first else '' }}">
+            {% if loop.first %}<div class="rec-tag">TOP PICK</div>{% endif %}
+            <h3>{{ r.task.title }}</h3>
+            <p class="muted">{{ r.task.module.name }} &middot; due {{ r.task.due_date.strftime('%d %b') }}
+                {% if r.breakdown.days_left < 0 %}<span class="badge badge-high">overdue</span>{% endif %}</p>
+            <p><b>Score: {{ r.score }}/10</b></p>
+            <p class="reco-reason">Recommended because {{ r.reason }}.</p>
+            <p class="muted score-breakdown">
+                urgency {{ r.breakdown.urgency }} &middot;
+                difficulty {{ r.breakdown.difficulty }} &middot;
+                unfinished {{ r.breakdown.progress }} &middot;
+                priority {{ r.breakdown.priority }}
+                {% if r.task.is_struggling %}&middot; struggling +{{ r.breakdown.struggling }}{% endif %}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="muted">No pending tasks to recommend — add some tasks to get suggestions.</p>
+    {% endif %}
+
+    {% if struggling_tasks %}
+    <h2>Topics you're struggling with</h2>
+    <ul>
+        {% for t in struggling_tasks %}
+        <li>{{ t.title }} <span class="muted">({{ t.module.name }})</span></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h2>Upcoming Tasks</h2>
+    {% if upcoming %}
+    <table class="data-table">
+        <thead><tr><th>Task</th><th>Module</th><th>Due</th><th>Priority</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for t in upcoming %}
+            <tr class="{{ 'overdue' if t.due_date < today else '' }}">
+                <td>{{ t.title }}</td>
+                <td>{{ t.module.name }}</td>
+                <td>{{ t.due_date.strftime('%d %b %Y') }}</td>
+                <td><span class="badge badge-{{ t.priority }}">{{ t.priority }}</span></td>
+                <td>{{ t.status.replace('_', ' ') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No upcoming tasks — <a href="{{ url_for('modules.list_modules') }}">add a module and some tasks</a> to get started.</p>
+    {% endif %}
+
+</div>
+{% endblock %}
